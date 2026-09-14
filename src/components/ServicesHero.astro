@@ -1,18 +1,35 @@
+---
+const leftColumn = [
+  "Ride-on Mowers",
+  "Push Mowers",
+  "Cylinder Mowers",
+  "Brush Cutters",
+  "Generators",
+  "Hedge Trimmers",
+  "Chain Saws",
+];
+const rightColumn = [
+  "Battery Testing & Replacement",
+  "Pressure Washers",
+  "Pumps",
+  "Motor Bikes",
+  "Quads",
+  "Chain Sharpening",
+  "Tyre Repair & Replacement",
+];
+---
+
 <section class="flex flex-row w-full bg-[#161616] bg-gradient-to-b from-red-900/20 to-black/20 shadow-lg overflow-hidden">
   <!-- Owner Photograph -->
-  <div class="w-1/3 min-h-[300px] bg-cover bg-center" style="background-image: url('/depositphotos_88370532-stock-photo-mechanic-holding-a-wrench.jpg');"></div>
+  <div class="w-1/3 min-h-[300px] bg-cover" style="background-image: url('/depositphotos_88370532-stock-photo-mechanic-holding-a-wrench.jpg'); background-position: 40% center;"></div>
 
   <!-- Tight Two-Column Bullet List -->
   <div class="w-2/3 p-3 flex gap-2 font-['Teko'] text-white uppercase text-lg leading-tight">
-    <ul class="w-1/2 border border-black p-2 list-disc list-inside space-y-1">
-      <li>Logbook Service</li>
-      <li>Brake Repairs</li>
-      <li>Diagnostics</li>
+    <ul class="w-1/2 p-2 list-disc list-inside space-y-1">
+      {leftColumn.map((item) => <li>{item}</li>)}
     </ul>
-    <ul class="w-1/2 border border-black p-2 list-disc list-inside space-y-1">
-      <li>Suspension</li>
-      <li>Engine Tuning</li>
-      <li>Safety Inspection</li>
+    <ul class="w-1/2 p-2 list-disc list-inside space-y-1">
+      {rightColumn.map((item) => <li>{item}</li>)}
     </ul>
   </div>
 </section>
