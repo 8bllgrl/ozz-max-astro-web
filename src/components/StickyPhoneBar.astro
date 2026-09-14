@@ -1,18 +1,25 @@
-<div class="sticky top-0 z-50 grid grid-cols-3 items-center px-4 py-2 bg-[#D9D9D9] bg-[linear-gradient(rgba(217,217,217,0.35),rgba(217,217,217,0.35)),url('/grunge-wall-texture_1048-4224.avif')] bg-repeat-y bg-[length:100%_auto] shadow-md">
-  <!-- Mobile Menu Dropdown -->
-  <div class="relative group justify-self-start">
-    <button aria-label="Open Menu" class="p-2 border-2 border-black rounded flex items-center justify-center">
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<div 
+  id="sticky-phone-bar"
+  class="sticky top-0 z-50 grid grid-cols-3 items-center px-4 py-2 bg-[#D9D9D9] bg-[linear-gradient(rgba(217,217,217,0.35),rgba(217,217,217,0.35)),url('/grunge-wall-texture_1048-4224.avif')] bg-repeat-y bg-[length:100%_auto] shadow-md"
+>
+  <!-- Mobile Menu Trigger -->
+  <div class="justify-self-start">
+    <button 
+      id="menu-toggle" 
+      aria-label="Toggle Navigation Menu" 
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      class="p-2 border-2 border-black rounded flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-black relative z-50"
+    >
+      <!-- Hamburger Icon -->
+      <svg id="menu-icon-open" class="w-6 h-6 block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
       </svg>
+      <!-- Close Icon -->
+      <svg id="menu-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
     </button>
-
-    <!-- Dropdown Navigation -->
-    <nav class="hidden group-hover:flex group-focus-within:flex absolute top-full left-0 mt-1 w-48 bg-black text-white flex-col rounded shadow-lg py-2">
-      <a href="/" class="px-4 py-2 hover:bg-zinc-800">Home</a>
-      <a href="/about" class="px-4 py-2 hover:bg-zinc-800">About</a>
-      <a href="/contact" class="px-4 py-2 hover:bg-zinc-800">Contact</a>
-    </nav>
   </div>
 
   <!-- Phone Number -->
@@ -20,3 +27,90 @@
     0423 595 229
   </a>
 </div>
+
+<!-- Backdrop Overlay -->
+<div 
+  id="menu-backdrop" 
+  class="fixed inset-x-0 bottom-0 bg-black/60 z-30 opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out"
+></div>
+
+<!-- Left Slide Drawer -->
+<nav 
+  id="mobile-menu" 
+  class="fixed left-0 bottom-0 w-[80vw] max-w-[320px] bg-[#161616] border-r border-[#3F3F3F] text-white flex flex-col justify-between p-6 z-40 shadow-2xl transform -translate-x-full transition-transform duration-300 ease-in-out"
+>
+  <div class="flex flex-col gap-6 pt-4">
+    <p class="font-['Oswald'] text-xs uppercase tracking-widest text-zinc-500 border-b border-zinc-800 pb-2">Navigation</p>
+    
+    <div class="flex flex-col gap-2">
+      <a href="/" class="font-['Teko'] text-3xl tracking-wide text-white hover:text-[#A12626] transition-colors py-1">Home</a>
+      <a href="/about" class="font-['Teko'] text-3xl tracking-wide text-white hover:text-[#A12626] transition-colors py-1">About</a>
+      <a href="/contact" class="font-['Teko'] text-3xl tracking-wide text-white hover:text-[#A12626] transition-colors py-1">Contact</a>
+    </div>
+  </div>
+
+  <div class="border-t border-zinc-800 pt-4 flex flex-col gap-1">
+    <span class="font-['Oswald'] text-xs text-zinc-400">Need immediate help?</span>
+    <a href="tel:0423595229" class="font-['Teko'] text-2xl text-[#A12626]">0423 595 229</a>
+  </div>
+</nav>
+
+<script>
+  const stickyBar = document.getElementById('sticky-phone-bar');
+  const toggleBtn = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  const backdrop = document.getElementById('menu-backdrop');
+  const iconOpen = document.getElementById('menu-icon-open');
+  const iconClose = document.getElementById('menu-icon-close');
+
+  function updateMenuPosition() {
+    if (!stickyBar || !menu || !backdrop) return;
+    
+    // Calculates exact pixel distance from top of screen to bottom of the sticky bar
+    const barRect = stickyBar.getBoundingClientRect();
+    const topOffset = barRect.bottom;
+
+    menu.style.top = `${topOffset}px`;
+    menu.style.height = `calc(100vh - ${topOffset}px)`;
+    backdrop.style.top = `${topOffset}px`;
+  }
+
+  function openMenu() {
+    updateMenuPosition();
+    toggleBtn?.setAttribute('aria-expanded', 'true');
+    menu?.classList.remove('-translate-x-full');
+    
+    backdrop?.classList.remove('opacity-0', 'pointer-events-none');
+    backdrop?.classList.add('opacity-100', 'pointer-events-auto');
+
+    iconOpen?.classList.add('hidden');
+    iconClose?.classList.remove('hidden');
+  }
+
+  function closeMenu() {
+    toggleBtn?.setAttribute('aria-expanded', 'false');
+    menu?.classList.add('-translate-x-full');
+    
+    backdrop?.classList.add('opacity-0', 'pointer-events-none');
+    backdrop?.classList.remove('opacity-100', 'pointer-events-auto');
+
+    iconOpen?.classList.remove('hidden');
+    iconClose?.classList.add('hidden');
+  }
+
+  toggleBtn?.addEventListener('click', () => {
+    const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+    if (isExpanded) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  });
+
+  backdrop?.addEventListener('click', closeMenu);
+  window.addEventListener('resize', () => {
+    if (toggleBtn?.getAttribute('aria-expanded') === 'true') {
+      updateMenuPosition();
+    }
+  });
+</script>
