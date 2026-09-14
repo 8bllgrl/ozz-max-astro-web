@@ -1,0 +1,14 @@
+<div id="wip-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/70">
+  <div class="bg-[#161616] text-white border border-[#3F3F3F] rounded-lg px-8 py-6 max-w-sm mx-4 text-center shadow-lg cursor-pointer" id="wip-card">
+    <div class="text-2xl mb-2">⚠️</div>
+    <p class="font-['Inter'] text-base">This webpage is a work in progress.</p>
+    <p class="font-['Inter'] text-xs text-gray-400 mt-3">(click anywhere to dismiss)</p>
+  </div>
+</div>
+
+<script>
+  const overlay = document.getElementById('wip-overlay');
+  overlay?.addEventListener('click', () => {
+    overlay.remove();
+  });
+</script>
