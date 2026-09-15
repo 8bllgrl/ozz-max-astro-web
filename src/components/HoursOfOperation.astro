@@ -8,6 +8,21 @@ const hours = [
   { day: 'Saturday', time: '10:00 - 17:30' },
   { day: 'Sunday', time: 'CLOSED', closed: true },
 ];
+
+// Helper to format initial SSR state to 12-hour
+function convertTimeTo12H(timeStr: string): string {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const convertedHour = hours % 12 || 12;
+  return `${convertedHour}:${minutes.toString().padStart(2, '0')} ${period}`;
+}
+
+function formatRange(rangeStr: string): string {
+  return rangeStr
+    .split('-')
+    .map((t) => convertTimeTo12H(t.trim()))
+    .join(' - ');
+}
 ---
 
 <!-- Section background with red to dark red gradient -->
@@ -16,18 +31,32 @@ const hours = [
   <!-- Solid Black Inner Card -->
   <div class="flex flex-col items-center gap-[13px] bg-black border-[3px] border-[#3F3F3F] rounded-[13px] px-[7px] py-[19px] max-w-[366px] w-full h-auto shadow-2xl">
     
-    <!-- Header Title -->
-    <h2 class="font-['Oswald'] text-[24px] font-normal leading-[112%] tracking-[0.03em] text-center text-white uppercase border-b border-[#3F3F3F] pb-3 w-full">
-      Hours ⏱️
-    </h2>
+    <!-- Header Title & Format Toggle Button -->
+    <div class="flex justify-between items-center border-b border-[#3F3F3F] pb-3 w-full px-4">
+      <h2 class="font-['Oswald'] text-[24px] font-normal leading-[112%] tracking-[0.03em] text-white uppercase">
+        Hours ⏱️
+      </h2>
+
+      <button
+        id="format-toggle-btn"
+        aria-label="Toggle time format"
+        class="font-['Oswald'] text-base uppercase px-3 py-1.5 rounded border border-[#3F3F3F] text-[#B7B7B7] hover:text-white hover:border-white transition-colors cursor-pointer"
+      >
+        <span id="format-label">24H</span>
+      </button>
+    </div>
 
     <!-- Hours List -->
     <div class="flex flex-col gap-3 w-full px-4 pt-2 font-['Oswald'] text-[24px] font-normal leading-[112%] tracking-[0.03em] text-white">
       {hours.map((item) => (
         <div class="flex justify-between items-center">
           <span class="text-left">{item.day}</span>
-          <span class={`text-right ${item.closed ? 'text-[#71717A]' : 'text-[#B7B7B7]'}`}>
-            {item.time}
+          <span 
+            class={`time-display text-right ${item.closed ? 'text-[#71717A]' : 'text-[#B7B7B7]'}`}
+            data-original-time={item.time}
+            data-closed={item.closed ? "true" : "false"}
+          >
+            {item.closed ? item.time : formatRange(item.time)}
           </span>
         </div>
       ))}
@@ -35,3 +64,48 @@ const hours = [
 
   </div>
 </section>
+
+<script>
+  const toggleBtn = document.getElementById('format-toggle-btn');
+  const formatLabel = document.getElementById('format-label');
+  const timeElements = document.querySelectorAll('.time-display');
+
+  // Set default state to 12-hour mode
+  let is24Hour = false;
+
+  function convertTimeTo12H(timeStr: string): string {
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const convertedHour = hours % 12 || 12;
+    return `${convertedHour}:${minutes.toString().padStart(2, '0')} ${period}`;
+  }
+
+  function formatRange(rangeStr: string): string {
+    return rangeStr
+      .split('-')
+      .map((t) => convertTimeTo12H(t.trim()))
+      .join(' - ');
+  }
+
+  toggleBtn?.addEventListener('click', () => {
+    is24Hour = !is24Hour;
+
+    if (formatLabel) {
+      formatLabel.textContent = is24Hour ? '12H' : '24H';
+    }
+
+    timeElements.forEach((el) => {
+      const htmlEl = el as HTMLElement;
+      const isClosed = htmlEl.dataset.closed === 'true';
+      const originalTime = htmlEl.dataset.originalTime || '';
+
+      if (isClosed) return;
+
+      if (is24Hour) {
+        htmlEl.textContent = originalTime;
+      } else {
+        htmlEl.textContent = formatRange(originalTime);
+      }
+    });
+  });
+</script>
